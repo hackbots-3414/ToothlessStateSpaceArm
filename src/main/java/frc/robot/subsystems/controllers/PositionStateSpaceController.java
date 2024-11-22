@@ -7,6 +7,8 @@ package frc.robot.subsystems.controllers;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
+import javax.swing.text.Position;
+
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
@@ -15,6 +17,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,8 +38,8 @@ public class PositionStateSpaceController extends SubsystemBase {
 
     private String name;
 
-    /** Creates a new Flywheel. */
-    public PositionStateSpaceController(double kV, double kA, DoubleSupplier positionSupplier, DoubleConsumer applyVoltage, String name) {
+    /** Creates a statespacecontroller */
+    public PositionStateSpaceController(LinearSystem<N2, N1, N1> flywheelPlant, DoubleSupplier positionSupplier, DoubleConsumer applyVoltage, String name) {
 
         this.positionSupplier = positionSupplier;
         this.applyVoltage = applyVoltage;
@@ -45,12 +48,7 @@ public class PositionStateSpaceController extends SubsystemBase {
 
         this.name = name;
 
-        initializeStateSpaceLoop(kV, kA);
-    }
-
-    private void initializeStateSpaceLoop(double kV, double kA) {
-
-        this.m_flywheelPlant = LinearSystemId.identifyPositionSystem(kV, kA);
+        this.m_flywheelPlant = flywheelPlant; // LinearSystemId.createSingleJointedArmSystem(dcMotor, momentOfIntertia, gearing)
 
         // The observer fuses our encoder data and voltage inputs to reject noise.
         this.m_observer = new KalmanFilter<N2, N1, N1>(
@@ -74,6 +72,7 @@ public class PositionStateSpaceController extends SubsystemBase {
 
         m_loop.reset(VecBuilder.fill(positionSupplier.getAsDouble(), 0.0));
     }
+
 
     @Override
     public void periodic() {

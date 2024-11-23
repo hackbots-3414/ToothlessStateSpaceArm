@@ -4,7 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import frc.robot.stateSpace.StateSpaceConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -15,37 +22,68 @@ import edu.wpi.first.math.system.plant.DCMotor;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class ArmConstants {
+    public static final class StateSpaceConstants {
+        public static final double k_dt = 0.02;
+        public static final double k_maxVoltage = 12.0;
+    }
+
+    public static final class ShoulderConstants {
         public final static int shoulderMotorPort = 6;
-        public final static int wristMotorPort = 7;
 
         public final static int shoulderCancoderPort = 8;
-        public final static int wristCancoderPort = 9;
 
-        // I for arm is 6.5 kg m^2
-
-        public final static double shoulderKv = 0.1;
-        public final static double shoulderKa = 0.01;
-        public final static double wristKv = 0.1;
-        public final static double wristKa = 0.01;
-
-        public final static double shoulderI = 100.0;
         public final static double shoulderGearRatio = 100.0;
         public final static double shoulderMomentOfIntertia = 6.5; // kg m^2
-        public final static double wristI = 20.0;
-        public final static double wristGearRatio = 100.0;
-        public final static double wristMomentOfIntertia = 0; // kg m^2
 
-    /*
-     * shoulder i = 
-     */
+        public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
 
-        public final static String shoulderName = "Shoulder";
-        public final static String wristName = "Wrist";
+        public final static Vector<N2> k_qelms = VecBuilder.fill(0.05, 0.1);
+        public final static Vector<N1> k_relms = VecBuilder.fill(8.0);
+
+        public final static String k_shoulderName = "Shoulder";
+
+        public final static StateSpaceConfig<N2, N1, N1> k_shoulderControllerConfig = new StateSpaceConfig<N2, N1, N1>(
+            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, shoulderMomentOfIntertia, shoulderGearRatio),
+            k_stateStdDevs,
+            TalonFXConstants.k_outputStdDevs,
+            k_qelms,
+            k_relms,
+            Nat.N2(),
+            Nat.N1(),
+            k_shoulderName
+        );
 
         /* These 2 values were genreated from the "zero" positions of the motors. */
         public final static double shoulderOffset = -0.1650390625;
+    }
+
+    public static final class WristConstants {
+        public final static int wristMotorPort = 7;
+        public final static int wristCancoderPort = 9;
+
+        public final static double wristGearRatio = 100.0;
+        public final static double wristMomentOfIntertia = 0; // kg m^2
+
+        public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
+
+        public final static Vector<N2> k_qelms = VecBuilder.fill(0.05, 0.1);
+        public final static Vector<N1> k_relms = VecBuilder.fill(8.0);
+
+        public final static String k_shoulderName = "Wrist";
+
+        public final static StateSpaceConfig<N2, N1, N1> k_shoulderControllerConfig = new StateSpaceConfig<N2, N1, N1>(
+            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, wristMomentOfIntertia, wristGearRatio),
+            k_stateStdDevs,
+            TalonFXConstants.k_outputStdDevs,
+            k_qelms,
+            k_relms,
+            Nat.N2(),
+            Nat.N1(),
+            k_shoulderName
+        );
+
         public final static double wristOffset = -0.5107421875;
+
     }
 
     public static final class TalonFXConstants {
@@ -55,6 +93,12 @@ public final class Constants {
         public final static double freeCurrentAmps = 1.5; // Amps
         public final static double freeSpeedRadPerSec = 6380 * 2 * Math.PI / 60; // RPM * 2pi / 60 = Rad per second
 
+        public final static double positionStdDevs = 1.0 / 2048.0; // rotations
+        public final static double velocityStdDevs = 2.0 / 2048.0; // rotations
+
         public final static DCMotor TalonFXDCMotor = new DCMotor(nominalVoltageVolts, stallTorqueNewtonMeters, stallCurrentAmps, freeCurrentAmps, freeSpeedRadPerSec, 1);
+
+        public final static Vector<N1> k_outputStdDevs = VecBuilder.fill(TalonFXConstants.positionStdDevs);
+
     }
 }

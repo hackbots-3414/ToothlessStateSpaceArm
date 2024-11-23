@@ -4,56 +4,85 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.TalonFXConstants;
-import frc.robot.subsystems.controllers.PositionStateSpaceController;
+import frc.robot.Constants.ShoulderConstants;
+import frc.robot.Constants.WristConstants;
+import frc.robot.stateSpace.StateSpaceController;
 
 public class Arm extends SubsystemBase {
 
-  private TalonFX shoulderMotor;
-  private TalonFX wristMotor;
+  private TalonFX m_shoulderMotor;
+  private TalonFX m_wristMotor;
 
-  private PositionStateSpaceController shoulderController;
-  private PositionStateSpaceController wristController;
+  private CANcoder m_shoulderCancoder;
+  private CANcoder m_wristCancoder;
 
-  private CANcoder shoulderCancoder;
-  private CANcoder wristCancoder;
+  private StateSpaceController<N2, N1, N1> m_shoulderController;
+  private StateSpaceController<N2, N1, N1> m_wristController;
 
   /** Creates a new Arm. */
   public Arm() {
-    this.shoulderMotor = new TalonFX(ArmConstants.shoulderMotorPort);
-    this.wristMotor = new TalonFX(ArmConstants.wristMotorPort);
+    m_shoulderMotor = new TalonFX(ShoulderConstants.shoulderMotorPort);
+    m_wristMotor = new TalonFX(WristConstants.wristMotorPort);
 
-    this.shoulderCancoder = new CANcoder(ArmConstants.shoulderCancoderPort);
-    this.wristCancoder = new CANcoder(ArmConstants.wristCancoderPort);
+    m_shoulderCancoder = new CANcoder(ShoulderConstants.shoulderCancoderPort);
+    m_wristCancoder = new CANcoder(WristConstants.wristCancoderPort);
 
-    this.shoulderController = new PositionStateSpaceController(ArmConstants.shoulderMomentOfIntertia, ArmConstants.shoulderGearRatio, TalonFXConstants.TalonFXDCMotor, this::getShoulderPosition, this::applyShoulderVoltage, ArmConstants.shoulderName);
-    this.wristController = new PositionStateSpaceController(ArmConstants.wristMomentOfIntertia, ArmConstants.wristGearRatio, TalonFXConstants.TalonFXDCMotor, this::getWristPosition, this::applyWristVoltage, ArmConstants.wristName);
+    Vector<N2> initialShoulderState = VecBuilder.fill(
+      m_shoulderCancoder.getAbsolutePosition().getValueAsDouble(),
+      m_shoulderCancoder.getVelocity().getValueAsDouble()
+    );
+
+    Vector<N2> initialWristState = VecBuilder.fill(
+      m_wristCancoder.getAbsolutePosition().getValueAsDouble(),
+      m_shoulderCancoder.getVelocity().getValueAsDouble()
+    );
+
+    m_shoulderController = new StateSpaceController<N2, N1, N1>(
+      ShoulderConstants.k_shoulderControllerConfig,
+      this::getShoulderPosition,
+      this::applyShoulderVoltage,
+      initialShoulderState
+    );
+
+    m_wristController = new StateSpaceController<N2, N1, N1>(
+      WristConstants.k_shoulderControllerConfig,
+      this::getWristPosition,
+      this::applyWristVoltage,
+      initialWristState
+    );
   }
 
-  private double getShoulderPosition() {
-    return shoulderCancoder.getAbsolutePosition().getValueAsDouble();
+  private Vector<N1> getShoulderPosition() {
+    return VecBuilder.fill(
+      m_shoulderCancoder.getAbsolutePosition().getValueAsDouble()
+    );
   }
-  private double getWristPosition() {
-    return wristCancoder.getAbsolutePosition().getValueAsDouble();
+  private Vector<N1> getWristPosition() {
+    return VecBuilder.fill(
+      m_wristCancoder.getAbsolutePosition().getValueAsDouble()
+    );
   }
 
-  private void applyShoulderVoltage(double volts) {
-    shoulderMotor.setVoltage(volts);
+  private void applyShoulderVoltage(Vector<N1> input) {
+    double volts = input.get(0);
+    m_shoulderMotor.setVoltage(volts);
   }
 
-  private void applyWristVoltage(double volts) {
-    wristMotor.setVoltage(volts);
+  private void applyWristVoltage(Vector<N1> input) {
+    double volts = input.get(0);
+    m_wristMotor.setVoltage(volts);
   }
 
   public void setState(double shoulderPosition, double wristPosition) {
-    shoulderController.setPosition(shoulderPosition);
-    wristController.setPosition(wristPosition);
+    m_shoulderController.setReference(VecBuilder.fill(shoulderPosition, 0.0));
+    m_wristController.setReference(VecBuilder.fill(shoulderPosition, 0.0));
   }
 }

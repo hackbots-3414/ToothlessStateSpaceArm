@@ -87,11 +87,11 @@ public final class Constants {
     }
 
     public static final class TalonFXConstants {
-        public final static double nominalVoltageVolts = 12; // DC Volts
+        public final static double nominalVoltageVolts = 12.0; // DC Volts
         public final static double stallTorqueNewtonMeters = 4.69; // Nm
-        public final static double stallCurrentAmps = 257; // Amps
+        public final static double stallCurrentAmps = 257.0; // Amps
         public final static double freeCurrentAmps = 1.5; // Amps
-        public final static double freeSpeedRadPerSec = 6380 * 2 * Math.PI / 60; // RPM * 2pi / 60 = Rad per second
+        public final static double freeSpeedRadPerSec = 6380.0 * 2.0 * Math.PI / 60.0; // RPM * 2pi / 60 = Rad per second
 
         public final static double positionStdDevs = 1.0 / 2048.0; // rotations
         public final static double velocityStdDevs = 2.0 / 2048.0; // rotations

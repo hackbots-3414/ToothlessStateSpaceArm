@@ -10,8 +10,14 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.LinearSystemLoop;
 import frc.robot.Constants.StateSpaceConstants;
 
+/**
+ * A reusable container for the configuration of a state space system.
+ * 
+ * This is meant to be used with the State Space Controller class.
+ */
 public class StateSpaceConfig<States extends Num, Inputs extends Num, Outputs extends Num> {
   private LinearSystem<States, Inputs, Outputs> m_plant;
   private Vector<States> m_stateStdDevs;
@@ -24,7 +30,18 @@ public class StateSpaceConfig<States extends Num, Inputs extends Num, Outputs ex
   private Nat<Outputs> m_outputs;
 
   private String m_name;
-  /** Creates a new StateSpaceConfig. */
+
+  /**
+   * Initializes a reusable state space controller configuration
+   * @param plant The <code>LinearSystem</code> that represents the actual model. This can be generated from <code>LinearSystemId</code>.
+   * @param stateStdDevs Standard deviations of model states
+   * @param outputStdDevs Standard deviations of measurements
+   * @param qelms The maximum tolerated error for each state
+   * @param relms The maximum value for each control input
+   * @param states A Nat representing the number of states
+   * @param outputs A Nat representing the number of outputs
+   * @param name The name of the system to be used in logging.
+   */
   public StateSpaceConfig(
     LinearSystem<States, Inputs, Outputs> plant,
     Vector<States> stateStdDevs,
@@ -50,6 +67,9 @@ public class StateSpaceConfig<States extends Num, Inputs extends Num, Outputs ex
       m_name = name;
     }
 
+  /**
+   * Builds a Kalman Filter to clean up noise from the measuremens.
+   */
   public KalmanFilter<States, Inputs, Outputs> buildObserver() {
     return new KalmanFilter<States, Inputs, Outputs>(
       m_states,
@@ -61,6 +81,9 @@ public class StateSpaceConfig<States extends Num, Inputs extends Num, Outputs ex
     );
   }
 
+  /**
+   * Builds the LQR controller.
+   */
   public LinearQuadraticRegulator<States, Inputs, Outputs> buildController() {
     return new LinearQuadraticRegulator<States, Inputs, Outputs>(
       m_plant,
@@ -70,11 +93,23 @@ public class StateSpaceConfig<States extends Num, Inputs extends Num, Outputs ex
     );
   }
 
-  public String getName() {
-    return m_name;
+  /**
+   * Constructs the Linear System Loop with all of the parameters of the configuration
+   */
+  public LinearSystemLoop<States, Inputs, Outputs> buildLoop() {
+    return new LinearSystemLoop<States, Inputs, Outputs>(
+      m_plant,
+      buildController(),
+      buildObserver(),
+      StateSpaceConstants.k_maxVoltage,
+      StateSpaceConstants.k_dt
+    );
   }
 
-  public LinearSystem<States, Inputs, Outputs> getPlant() {
-    return m_plant;
+  /**
+   * Returns the system name, for logging purposes
+   */
+  public String getName() {
+    return m_name;
   }
 }

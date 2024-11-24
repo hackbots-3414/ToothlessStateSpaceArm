@@ -9,16 +9,12 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.LinearQuadraticRegulator;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.StateSpaceConstants;
 
 public class StateSpaceController<States extends Num, Inputs extends Num, Outputs extends Num> extends SubsystemBase {
-  private KalmanFilter<States, Inputs, Outputs> m_observer;
-  private LinearQuadraticRegulator<States, Inputs, Outputs> m_controller;
   private LinearSystemLoop<States, Inputs, Outputs> m_loop;
 
   private Supplier<Vector<Outputs>> m_outputSupplier;
@@ -26,7 +22,7 @@ public class StateSpaceController<States extends Num, Inputs extends Num, Output
 
   private String m_name;
 
-  /** Creates a new SuperGenericStateSpaceController. */
+  /** Creates a new StateSpaceController. */
   public StateSpaceController(
     StateSpaceConfig<States, Inputs, Outputs> config,
     Supplier<Vector<Outputs>> outputSupplier,
@@ -37,12 +33,9 @@ public class StateSpaceController<States extends Num, Inputs extends Num, Output
     m_outputSupplier = outputSupplier;
     m_inputConsumer = inputConsumer;
 
-    m_observer = config.buildObserver();
-    m_controller = config.buildController();
-
     m_name = config.getName();
 
-    this.m_loop = new LinearSystemLoop<>(config.getPlant(), m_controller, m_observer, StateSpaceConstants.k_maxVoltage, StateSpaceConstants.k_dt);
+    m_loop = config.buildLoop();
     m_loop.reset(initialState);
   }
 
@@ -68,6 +61,10 @@ public class StateSpaceController<States extends Num, Inputs extends Num, Output
 
   }
 
+  /**
+   * Sets the new reference state
+   * @param ref The reference for each state
+   */
   public void setReference(Vector<States> ref) {
     m_loop.setNextR(ref);
   }

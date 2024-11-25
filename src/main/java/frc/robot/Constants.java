@@ -69,9 +69,9 @@ public final class Constants {
         public final static Vector<N2> k_qelms = VecBuilder.fill(0.05, 0.1);
         public final static Vector<N1> k_relms = VecBuilder.fill(8.0);
 
-        public final static String k_shoulderName = "Wrist";
+        public final static String k_wristName = "Wrist";
 
-        public final static StateSpaceConfig<N2, N1, N1> k_shoulderControllerConfig = new StateSpaceConfig<N2, N1, N1>(
+        public final static StateSpaceConfig<N2, N1, N1> k_wristControllerConfig = new StateSpaceConfig<N2, N1, N1>(
             LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, wristMomentOfIntertia, wristGearRatio),
             k_stateStdDevs,
             TalonFXConstants.k_outputStdDevs,
@@ -79,7 +79,7 @@ public final class Constants {
             k_relms,
             Nat.N2(),
             Nat.N1(),
-            k_shoulderName
+            k_wristName
         );
 
         public final static double wristOffset = -0.5107421875;

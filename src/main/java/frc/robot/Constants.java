@@ -33,7 +33,7 @@ public final class Constants {
         public final static int shoulderCancoderPort = 8;
 
         public final static double shoulderGearRatio = 100.0;
-        public final static double shoulderMomentOfIntertia = 6.5; // kg m^2
+        public final static double shoulderMomentOfInertia = 6.5; // kg m^2
 
         public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
 
@@ -43,7 +43,7 @@ public final class Constants {
         public final static String k_shoulderName = "Shoulder";
 
         public final static StateSpaceConfig<N2, N1, N1> k_shoulderControllerConfig = new StateSpaceConfig<N2, N1, N1>(
-            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, shoulderMomentOfIntertia, shoulderGearRatio),
+            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, shoulderMomentOfInertia, shoulderGearRatio),
             k_stateStdDevs,
             TalonFXConstants.k_outputStdDevs,
             k_qelms,
@@ -62,7 +62,7 @@ public final class Constants {
         public final static int wristCancoderPort = 9;
 
         public final static double wristGearRatio = 100.0;
-        public final static double wristMomentOfIntertia = 0; // kg m^2
+        public final static double wristMomentOfInertia = 0; // kg m^2
 
         public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
 
@@ -72,7 +72,7 @@ public final class Constants {
         public final static String k_wristName = "Wrist";
 
         public final static StateSpaceConfig<N2, N1, N1> k_wristControllerConfig = new StateSpaceConfig<N2, N1, N1>(
-            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, wristMomentOfIntertia, wristGearRatio),
+            LinearSystemId.createSingleJointedArmSystem(TalonFXConstants.TalonFXDCMotor, wristMomentOfInertia, wristGearRatio),
             k_stateStdDevs,
             TalonFXConstants.k_outputStdDevs,
             k_qelms,

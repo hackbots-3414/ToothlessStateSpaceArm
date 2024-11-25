@@ -42,7 +42,7 @@ public class Arm extends SubsystemBase {
 
     Vector<N2> initialWristState = VecBuilder.fill(
       m_wristCancoder.getAbsolutePosition().getValueAsDouble(),
-      m_shoulderCancoder.getVelocity().getValueAsDouble()
+      m_wristCancoder.getVelocity().getValueAsDouble()
     );
 
     m_shoulderController = new StateSpaceController<N2, N1, N1>(
@@ -53,7 +53,7 @@ public class Arm extends SubsystemBase {
     );
 
     m_wristController = new StateSpaceController<N2, N1, N1>(
-      WristConstants.k_shoulderControllerConfig,
+      WristConstants.k_wristControllerConfig,
       this::getWristPosition,
       this::applyWristVoltage,
       initialWristState

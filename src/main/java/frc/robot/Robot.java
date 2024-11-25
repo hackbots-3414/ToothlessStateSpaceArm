@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
+    configureButtonBindings();
   }
 
   /** This function is called periodically during operator control. */
@@ -95,4 +96,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  private void configureButtonBindings() {}
 }

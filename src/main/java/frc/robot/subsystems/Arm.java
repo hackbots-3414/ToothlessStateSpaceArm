@@ -83,6 +83,10 @@ public class Arm extends SubsystemBase {
 
   public void setState(double shoulderPosition, double wristPosition) {
     m_shoulderController.setReference(VecBuilder.fill(shoulderPosition, 0.0));
-    m_wristController.setReference(VecBuilder.fill(wristPosition, 0.0));
+    // m_wristController.setReference(VecBuilder.fill(wristPosition, 0.0));
+  }
+  
+  public void moveShoulder(double voltage) {
+    m_shoulderMotor.setVoltage(voltage);
   }
 }

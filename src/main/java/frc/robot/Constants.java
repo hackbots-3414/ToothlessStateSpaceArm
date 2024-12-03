@@ -24,7 +24,7 @@ import frc.robot.stateSpace.StateSpaceConfig;
 public final class Constants {
     public static final class StateSpaceConstants {
         public static final double k_dt = 0.02;
-        public static final double k_maxVoltage = 12.0;
+        public static final double k_maxVoltage = 5.0;
     }
 
     public static final class ShoulderConstants {
@@ -38,7 +38,7 @@ public final class Constants {
         public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
 
         public final static Vector<N2> k_qelms = VecBuilder.fill(0.05, 0.1);
-        public final static Vector<N1> k_relms = VecBuilder.fill(8.0);
+        public final static Vector<N1> k_relms = VecBuilder.fill(5.0);
 
         public final static String k_shoulderName = "Shoulder";
 
@@ -54,7 +54,7 @@ public final class Constants {
         );
 
         /* These 2 values were genreated from the "zero" positions of the motors. */
-        public final static double shoulderOffset = -0.1650390625;
+        // public final static double shoulderOffset = -0.1650390625;
     }
 
     public static final class WristConstants {
@@ -62,7 +62,7 @@ public final class Constants {
         public final static int wristCancoderPort = 9;
 
         public final static double wristGearRatio = 100.0;
-        public final static double wristMomentOfInertia = 0; // kg m^2
+        public final static double wristMomentOfInertia = 0.088126; // kg m^2
 
         public final static Vector<N2> k_stateStdDevs = VecBuilder.fill(0.2, 0.4);
 
